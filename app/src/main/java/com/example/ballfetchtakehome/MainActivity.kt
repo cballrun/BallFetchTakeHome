@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ballfetchtakehome.adapters.RvAdapter
 import com.example.ballfetchtakehome.databinding.ActivityMainBinding
 import com.example.ballfetchtakehome.models.FetchItem
+import com.example.ballfetchtakehome.models.ListItem
 import com.example.ballfetchtakehome.utils.RetrofitInstance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -45,10 +46,20 @@ class MainActivity : AppCompatActivity() {
         fetchList = response.body()!!
         val filteredFetchList = fetchList.filter{!it.name.isNullOrBlank()}
         val sortedFetchList = filteredFetchList.sortedWith(compareBy<FetchItem> {it.listId}.thenBy{it.name})
+        val groupedFetchList = mutableListOf<ListItem>()
+        var currentListId = -1
+
+        for(fetchItem in sortedFetchList) {
+          if(fetchItem.listId != currentListId) {
+            currentListId = fetchItem.listId
+            groupedFetchList.add(ListItem.Header(currentListId))
+          }
+          groupedFetchList.add(ListItem.Item(fetchItem))
+        }
 
         withContext(Dispatchers.Main){
           binding.rvMain.apply{
-            rvAdapter = RvAdapter(sortedFetchList)
+            rvAdapter = RvAdapter(groupedFetchList)
             adapter = rvAdapter
             layoutManager = LinearLayoutManager(this@MainActivity)
           }
