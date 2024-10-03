@@ -42,10 +42,13 @@ class MainActivity : AppCompatActivity() {
         return@launch
       }
       if(response.isSuccessful && response.body() != null) {
+        fetchList = response.body()!!
+        val filteredFetchList = fetchList.filter{!it.name.isNullOrBlank()}
+        val sortedFetchList = filteredFetchList.sortedWith(compareBy<FetchItem> {it.listId}.thenBy{it.name})
+
         withContext(Dispatchers.Main){
-          fetchList = response.body()!!
           binding.rvMain.apply{
-            rvAdapter = RvAdapter(fetchList)
+            rvAdapter = RvAdapter(sortedFetchList)
             adapter = rvAdapter
             layoutManager = LinearLayoutManager(this@MainActivity)
           }
