@@ -19,10 +19,15 @@ class RvAdapter (private val fetchList: List<FetchItem>): RecyclerView.Adapter<R
   }
 
   override fun getItemCount(): Int {
-    TODO("Not yet implemented")
+    return fetchList.size
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int){
-
+    val currentItem = fetchList[position]
+    holder.binding.apply{
+      tvId.text = "Id: ${currentItem.id}"
+      tvListId.text = "List Id: ${currentItem.listId}"
+      tvName.text = "Name: ${currentItem.name}"
+    }
   }
 }
